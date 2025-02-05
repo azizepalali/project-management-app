@@ -30,15 +30,12 @@ if uploaded_file is not None:
         df["Start Date"] = pd.to_datetime(df["Start Date"], format="%Y-%m-%d").dt.date
         df["End Date"] = pd.to_datetime(df["End Date"], format="%Y-%m-%d").dt.date
         
-        # Kullanıcının başlangıç ve bitiş tarihini seçmesini sağla
-        min_date = df["Start Date"].min()
-        max_date = df["End Date"].max()
-        
+        # Kullanıcının başlangıç ve bitiş tarihini seçmesini sağla, varsayılan değerler Ocak 1 - Mart 1
         col1, col2 = st.columns(2)
         with col1:
-            start_date = st.selectbox("Select Start Date", sorted(df["Start Date"].unique()))
+            start_date = st.selectbox("Select Start Date", sorted(df["Start Date"].unique()), index=sorted(df["Start Date"].unique()).index(datetime(2025, 1, 1).date()))
         with col2:
-            end_date = st.selectbox("Select End Date", sorted(df[df["Start Date"] >= start_date]["End Date"].unique()))
+            end_date = st.selectbox("Select End Date", sorted(df[df["Start Date"] >= start_date]["End Date"].unique()), index=sorted(df[df["Start Date"] >= start_date]["End Date"].unique()).index(datetime(2025, 3, 1).date()))
         
         # Seçilen tarih aralığında veriyi filtrele
         df = df[(df["Start Date"] >= start_date) & (df["End Date"] <= end_date)]
@@ -76,11 +73,11 @@ if uploaded_file is not None:
             st.subheader(f"Gantt Chart for {domain}")
             fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Task", color="Sub Domain", 
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
-            fig.update_traces(marker=dict(line=dict(width=0)), textposition='inside')
+            fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')), textposition='inside')  # Gölge efekti eklendi
             fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=False)
             fig.update_layout(
                 autosize=True,
-                height=900,  # Grafiğin dikey boyutunu artırdım
+                height=1000,  # Grafiğin dikey boyutunu artırdım
                 width=1600,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
