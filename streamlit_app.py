@@ -30,15 +30,15 @@ if uploaded_file is not None:
         df["Start Date"] = pd.to_datetime(df["Start Date"])
         df["End Date"] = pd.to_datetime(df["End Date"])
         
-        # Kullanıcının tarih aralığını seçmesini sağla
+        # Kullanıcının başlangıç ve bitiş tarihini seçmesini sağla
         min_date = df["Start Date"].min()
         max_date = df["End Date"].max()
-        start_date, end_date = st.sidebar.date_input(
-            "Select Date Range:",
-            [min_date, max_date],
-            min_value=min_date,
-            max_value=max_date
-        )
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            start_date = st.selectbox("Select Start Date", pd.date_range(min_date, max_date, freq='D'))
+        with col2:
+            end_date = st.selectbox("Select End Date", pd.date_range(start_date, max_date, freq='D'))
         
         # Seçilen tarih aralığında veriyi filtrele
         df = df[(df["Start Date"] >= pd.to_datetime(start_date)) & (df["End Date"] <= pd.to_datetime(end_date))]
