@@ -6,17 +6,6 @@ from datetime import datetime, timedelta
 # Sayfanın tam genişlikte olması ve arka planı beyaz yapmak için ayar
 st.set_page_config(layout="wide", page_title="Product Analytics Gantt Chart Creator 🚀", page_icon="🚀")
 
-st.markdown(
-    """
-    <style>
-        .main, .block-container {
-            background-color: white !important;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 # Başlık
 st.title("Product Analytics Gantt Chart Creator 🚀")
 
