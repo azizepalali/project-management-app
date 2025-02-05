@@ -32,8 +32,8 @@ if df is not None:
     # Verinin uygun formatta olduğundan emin ol
     required_columns = {"Main Domain", "Sub Domain", "Subject Area", "Task", "Start Date", "End Date"}
     if required_columns.issubset(df.columns):
-        df["Start Date"] = pd.to_datetime(df["Start Date"], format="%Y-%m-%d").dt.date
-        df["End Date"] = pd.to_datetime(df["End Date"], format="%Y-%m-%d").dt.date
+        df["Start Date"] = pd.to_datetime(df["Start Date"], errors='coerce').dt.date
+        df["End Date"] = pd.to_datetime(df["End Date"], errors='coerce').dt.date
         
         # Veri kümesindeki minimum ve maksimum tarihleri belirle
         min_date = df["Start Date"].min()
