@@ -30,12 +30,20 @@ if uploaded_file is not None:
         df["Start Date"] = pd.to_datetime(df["Start Date"], format="%Y-%m-%d").dt.date
         df["End Date"] = pd.to_datetime(df["End Date"], format="%Y-%m-%d").dt.date
         
-        # Kullanıcının başlangıç ve bitiş tarihini seçmesini sağla, varsayılan değerler Ocak 1 - Mart 1
+        # Veri kümesindeki minimum ve maksimum tarihleri belirle
+        min_date = df["Start Date"].min()
+        max_date = df["End Date"].max()
+        
+        # Varsayılan başlangıç ve bitiş tarihlerini ayarla
+        default_start = max(min_date, datetime(2025, 1, 1).date())
+        default_end = min(max_date, datetime(2025, 3, 1).date())
+        
         col1, col2 = st.columns(2)
         with col1:
-            start_date = st.selectbox("Select Start Date", sorted(df["Start Date"].unique()), index=sorted(df["Start Date"].unique()).index(datetime(2025, 1, 1).date()))
+            start_date = st.selectbox("Select Start Date", sorted(df["Start Date"].unique()), index=sorted(df["Start Date"].unique()).index(default_start) if default_start in df["Start Date"].unique() else 0)
         with col2:
-            end_date = st.selectbox("Select End Date", sorted(df[df["Start Date"] >= start_date]["End Date"].unique()), index=sorted(df[df["Start Date"] >= start_date]["End Date"].unique()).index(datetime(2025, 3, 1).date()))
+            available_end_dates = sorted(df[df["Start Date"] >= start_date]["End Date"].unique())
+            end_date = st.selectbox("Select End Date", available_end_dates, index=available_end_dates.index(default_end) if default_end in available_end_dates else len(available_end_dates) - 1)
         
         # Seçilen tarih aralığında veriyi filtrele
         df = df[(df["Start Date"] >= start_date) & (df["End Date"] <= end_date)]
