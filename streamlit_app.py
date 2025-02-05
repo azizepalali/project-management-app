@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
 
-# Sayfanın tam genişlikte olması ve arka planı beyaz yapmak için ayar
+# Sayfanın tam genişlikte olması için ayar
 st.set_page_config(layout="wide", page_title="Product Analytics Gantt Chart Creator 🚀", page_icon="🚀")
 
 # Başlık
@@ -66,6 +66,11 @@ if uploaded_file is not None:
         if subject_area != "All":
             filtered_df = filtered_df[filtered_df["Subject Area"] == subject_area]
         
+        # Data'yı kopyala yapıştır ile almak için gösterme
+        st.subheader("Filtered Data")
+        st.dataframe(filtered_df)
+        st.text_area("Copy/Paste Data", filtered_df.to_csv(index=False, sep='\t'))
+        
         # Her Main Domain için ayrı Gantt Chart oluşturma
         for domain in filtered_df["Main Domain"].unique():
             domain_df = filtered_df[filtered_df["Main Domain"] == domain].sort_values(by=["Sub Domain", "Start Date"])
@@ -74,7 +79,7 @@ if uploaded_file is not None:
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
             fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')), textposition='outside')  # Gölge efekti eklendi
             fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=True)
-            fig.update_layout(bargap=0.1,
+            fig.update_layout(bargap=0.1, 
                 autosize=True,
                 height=1000,  # Grafiğin dikey boyutunu artırdım
                 width=2200,
