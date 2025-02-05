@@ -3,18 +3,6 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
 
-# Sayfa genişliğini artır
-st.set_page_config(layout="wide", page_title="Product Analytics Gantt Chart Creator 🚀", page_icon="🚀", initial_sidebar_state="collapsed")
-
-# Arka plan rengini beyaz yap
-st.markdown("""
-    <style>
-        .main {
-            background-color: white !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 # Başlık
 st.title("Product Analytics Gantt Chart Creator 🚀")
 
