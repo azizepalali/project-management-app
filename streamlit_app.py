@@ -52,8 +52,9 @@ if uploaded_file is not None:
         
         # Gantt şeması oluşturma
         if not filtered_df.empty:
-            fig = px.timeline(filtered_df, x_start="Start Date", x_end="End Date", y="Task", color="Main Domain", 
-                              title="Gantt Chart", hover_data=["Main Domain", "Sub Domain", "Subject Area"])
+            fig = px.timeline(filtered_df, x_start="Start Date", x_end="End Date", y="Main Domain", color="Main Domain", 
+                              title="Gantt Chart", text="Task", hover_data=["Main Domain", "Sub Domain", "Subject Area", "Task"])
+            fig.update_traces(marker=dict(line=dict(width=0)), textposition='inside')
             fig.update_yaxes(categoryorder="total ascending", showgrid=True)
             fig.update_layout(
                 autosize=True,
@@ -61,19 +62,7 @@ if uploaded_file is not None:
                 width=1600,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
-                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
-                shapes=[
-                    dict(
-                        type="line",
-                        xref="x",
-                        yref="y",
-                        x0=row["Start Date"],
-                        x1=row["End Date"],
-                        y0=row["Task"],
-                        y1=row["Task"],
-                        line=dict(width=2, color="black"),
-                    ) for _, row in filtered_df.iterrows()
-                ]
+                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
             )
             st.plotly_chart(fig, use_container_width=True)
         else:
