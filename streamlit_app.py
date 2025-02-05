@@ -18,12 +18,17 @@ if uploaded_file is not None:
         df["Start Date"] = pd.to_datetime(df["Start Date"])
         df["End Date"] = pd.to_datetime(df["End Date"])
         
-        # Filtreleme seçenekleri
-        main_domain = st.sidebar.selectbox("Select Main Domain", ["All"] + sorted(df["Main Domain"].dropna().unique().tolist()))
-        sub_domain_options = ["All"] + sorted(df[df["Main Domain"] == main_domain]["Sub Domain"].dropna().unique().tolist()) if main_domain != "All" else ["All"] + sorted(df["Sub Domain"].dropna().unique().tolist())
-        sub_domain = st.sidebar.selectbox("Select Sub Domain", sub_domain_options)
-        subject_area_options = ["All"] + sorted(df[df["Sub Domain"] == sub_domain]["Subject Area"].dropna().unique().tolist()) if sub_domain != "All" else ["All"] + sorted(df["Subject Area"].dropna().unique().tolist())
-        subject_area = st.sidebar.selectbox("Select Subject Area", subject_area_options)
+        # Filtreleme seçenekleri üstte olacak şekilde düzenlendi
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            main_domain = st.selectbox("Select Main Domain", ["All"] + sorted(df["Main Domain"].dropna().unique().tolist()))
+        with col2:
+            sub_domain_options = ["All"] + sorted(df[df["Main Domain"] == main_domain]["Sub Domain"].dropna().unique().tolist()) if main_domain != "All" else ["All"] + sorted(df["Sub Domain"].dropna().unique().tolist())
+            sub_domain = st.selectbox("Select Sub Domain", sub_domain_options)
+        with col3:
+            subject_area_options = ["All"] + sorted(df[df["Sub Domain"] == sub_domain]["Subject Area"].dropna().unique().tolist()) if sub_domain != "All" else ["All"] + sorted(df["Subject Area"].dropna().unique().tolist())
+            subject_area = st.selectbox("Select Subject Area", subject_area_options)
         
         # Filtreleme işlemi
         filtered_df = df.copy()
@@ -41,9 +46,11 @@ if uploaded_file is not None:
             fig.update_yaxes(categoryorder="total ascending")
             fig.update_layout(
                 autosize=True,
-                height=600,  # Daha büyük grafik
+                height=900,  # Sayfayı kaplayacak şekilde büyütüldü
+                width=1400,
                 xaxis_title="Timeline",  # X ekseni başlığı
                 xaxis=dict(side="top"),  # Tarihlerin üstte görünmesi
+                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),  # Legend grafiğin altına alındı
                 shapes=[
                     dict(
                         type="rect",
