@@ -21,10 +21,11 @@ if option == "Upload Excel File":
         df = pd.read_excel(uploaded_file)
 
 elif option == "Paste Data":
-    pasted_data = st.text_area("Paste your tab-separated data here:")
+    pasted_data = st.text_area("Paste your comma-separated data here:")
     if pasted_data:
         try:
-            df = pd.read_csv(StringIO(pasted_data), sep="\t")
+            rows = [line.split(",") for line in pasted_data.strip().split("\n")]
+df = pd.DataFrame(rows[1:], columns=rows[0])
         except Exception as e:
             st.error(f"Error parsing data: {e}")
 
