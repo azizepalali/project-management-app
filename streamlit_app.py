@@ -36,8 +36,8 @@ if df is not None:
         df["End Date"] = pd.to_datetime(df["End Date"], errors='coerce').dt.date
         
         # Veri kümesindeki minimum ve maksimum tarihleri belirle
-        min_date = df["Start Date"].min()
-        max_date = df["End Date"].max()
+        min_date = df["Start Date"].min() if not pd.isna(df["Start Date"].min()) else datetime.today().date()
+        max_date = df["End Date"].max() if not pd.isna(df["End Date"].max()) else datetime.today().date()
         
         # Varsayılan başlangıç ve bitiş tarihlerini ayarla
         default_start = max(min_date, datetime(2025, 1, 1).date())
