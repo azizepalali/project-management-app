@@ -29,10 +29,6 @@ if uploaded_file is not None:
         # Ana Domain gruplarına göre sıralama
         df = df.sort_values(by=["Main Domain", "Sub Domain", "Start Date"])
         
-        # Unique ID oluşturma ve sol tarafta bu ID'yi kullanma
-        df["Unique ID"] = df["Main Domain"] + " - " + df["Task"]
-        df["Display Main Domain"] = df["Main Domain"]
-        
         # Filtreleme seçenekleri üstte olacak şekilde düzenlendi
         col1, col2, col3 = st.columns(3)
         
@@ -54,22 +50,22 @@ if uploaded_file is not None:
         if subject_area != "All":
             filtered_df = filtered_df[filtered_df["Subject Area"] == subject_area]
         
-        # Gantt şeması oluşturma
-        if not filtered_df.empty:
-            fig = px.timeline(filtered_df, x_start="Start Date", x_end="End Date", y="Unique ID", color="Main Domain", 
-                              title="Gantt Chart", text="Task", hover_data=["Main Domain", "Sub Domain", "Subject Area", "Task"])
+        # Her Main Domain için ayrı Gantt Chart oluşturma
+        for domain in filtered_df["Main Domain"].unique():
+            domain_df = filtered_df[filtered_df["Main Domain"] == domain]
+            st.subheader(f"Gantt Chart for {domain}")
+            fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Task", color="Sub Domain", 
+                              title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
             fig.update_traces(marker=dict(line=dict(width=0)), textposition='inside')
-            fig.update_yaxes(categoryorder="total ascending", ticktext=filtered_df["Display Main Domain"].unique(), tickvals=filtered_df["Unique ID"].unique(), showgrid=True)
+            fig.update_yaxes(categoryorder="total ascending", showgrid=True)
             fig.update_layout(
                 autosize=True,
-                height=900,
+                height=600,
                 width=1600,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
                 legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
             )
             st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.write("No data available for the selected filters.")
     else:
         st.error("Excel dosyanızda 'Main Domain', 'Sub Domain', 'Subject Area', 'Task', 'Start Date' ve 'End Date' sütunları bulunmalıdır.")
