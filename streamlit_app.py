@@ -52,8 +52,8 @@ if uploaded_file is not None:
                 height=1000,  # Sayfayı kaplayacak şekilde büyütüldü
                 width=1600,
                 xaxis_title="Timeline",  # X ekseni başlığı
-                xaxis=dict(side="top"),  # Tarihlerin üstte görünmesi
-                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),  # Legend grafiğin altına alındı
+                xaxis=dict(side="top", showgrid=True, tickmode='linear'),  # Tarihlerin tamamını göster ve grid ekle
+                legend=dict(orientation="h", yanchor="top", y=1.2, xanchor="center", x=0.5),  # Legend grafiğin üstüne alındı
                 shapes=[
                     dict(
                         type="rect",
@@ -64,7 +64,7 @@ if uploaded_file is not None:
                         y0=row["Task"],
                         y1=row["Task"],
                         fillcolor="rgba(0, 0, 255, 0.2)",
-                        line=dict(width=0)
+                        line=dict(width=1, color="black")
                     ) for _, row in filtered_df.iterrows()
                 ]
             )
