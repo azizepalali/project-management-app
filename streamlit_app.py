@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
+from io import StringIO
 
 # Sayfanın tam genişlikte olması için ayar
 st.set_page_config(layout="wide", page_title="Product Analytics Gantt Chart Creator 🚀", page_icon="🚀")
@@ -23,8 +24,7 @@ elif option == "Paste Data":
     pasted_data = st.text_area("Paste your tab-separated data here:")
     if pasted_data:
         try:
-            from io import StringIO
-df = pd.read_csv(StringIO(pasted_data), sep="	")
+            df = pd.read_csv(StringIO(pasted_data), sep="\t")
         except Exception as e:
             st.error(f"Error parsing data: {e}")
 
@@ -83,7 +83,7 @@ if df is not None:
         # Data'yı kopyala yapıştır ile almak için gösterme
         st.subheader("Filtered Data")
         st.dataframe(filtered_df)
-        st.text_area("Copy/Paste Data", filtered_df.to_csv(index=False, sep='\t'))
+        st.download_button(label="Download Filtered Data as CSV", data=filtered_df.to_csv(index=False), file_name="filtered_data.csv", mime="text/csv")
         
         # Her Main Domain için ayrı Gantt Chart oluşturma
         for domain in filtered_df["Main Domain"].unique():
