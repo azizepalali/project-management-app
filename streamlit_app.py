@@ -3,6 +3,9 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
+# Sayfa genişliğini artır
+st.set_page_config(layout="wide")
+
 # Başlık
 st.title("Interactive Gantt Chart Creator")
 
@@ -46,8 +49,8 @@ if uploaded_file is not None:
             fig.update_yaxes(categoryorder="total ascending")
             fig.update_layout(
                 autosize=True,
-                height=900,  # Sayfayı kaplayacak şekilde büyütüldü
-                width=1400,
+                height=1000,  # Sayfayı kaplayacak şekilde büyütüldü
+                width=1600,
                 xaxis_title="Timeline",  # X ekseni başlığı
                 xaxis=dict(side="top"),  # Tarihlerin üstte görünmesi
                 legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),  # Legend grafiğin altına alındı
