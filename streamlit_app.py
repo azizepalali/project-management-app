@@ -3,6 +3,9 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
 
+# Sayfanın tam genişlikte olması için ayar
+st.set_page_config(layout="wide", page_title="Product Analytics Gantt Chart Creator 🚀", page_icon="🚀")
+
 # Başlık
 st.title("Product Analytics Gantt Chart Creator 🚀")
 
