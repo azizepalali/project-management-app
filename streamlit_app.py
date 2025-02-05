@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 st.set_page_config(layout="wide")
 
 # Başlık
-st.title("Data Product Analytics Gantt Chart Creator 🚀")
+st.title("Interactive Gantt Chart Creator")
 
 # Kullanıcıdan Excel dosyası yükleme
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx", "xls"])
@@ -29,26 +29,8 @@ if uploaded_file is not None:
         # Ana Domain gruplarına göre sıralama, Task'ları Sub Domain bazında sıralama
         df = df.sort_values(by=["Main Domain", "Sub Domain", "Start Date"])
         
-        # Filtreleme seçenekleri üstte olacak şekilde düzenlendi
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            main_domain = st.selectbox("Select Main Domain", ["All"] + sorted(df["Main Domain"].dropna().unique().tolist()))
-        with col2:
-            sub_domain_options = ["All"] + sorted(df[df["Main Domain"] == main_domain]["Sub Domain"].dropna().unique().tolist()) if main_domain != "All" else ["All"] + sorted(df["Sub Domain"].dropna().unique().tolist())
-            sub_domain = st.selectbox("Select Sub Domain", sub_domain_options)
-        with col3:
-            subject_area_options = ["All"] + sorted(df[df["Sub Domain"] == sub_domain]["Subject Area"].dropna().unique().tolist()) if sub_domain != "All" else ["All"] + sorted(df["Subject Area"].dropna().unique().tolist())
-            subject_area = st.selectbox("Select Subject Area", subject_area_options)
-        
         # Filtreleme işlemi
         filtered_df = df.copy()
-        if main_domain != "All":
-            filtered_df = filtered_df[filtered_df["Main Domain"] == main_domain]
-        if sub_domain != "All":
-            filtered_df = filtered_df[filtered_df["Sub Domain"] == sub_domain]
-        if subject_area != "All":
-            filtered_df = filtered_df[filtered_df["Subject Area"] == subject_area]
         
         # Her Main Domain için ayrı Gantt Chart oluşturma
         for domain in filtered_df["Main Domain"].unique():
@@ -57,7 +39,7 @@ if uploaded_file is not None:
             fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Task", color="Sub Domain", 
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
             fig.update_traces(marker=dict(line=dict(width=0)), textposition='inside')
-            fig.update_yaxes(categoryorder="total ascending", showgrid=True)
+            fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=False)
             fig.update_layout(
                 autosize=True,
                 height=600,
