@@ -74,7 +74,7 @@ if uploaded_file is not None:
             fig.update_layout(plot_bgcolor='white', paper_bgcolor='white', 
                 autosize=True,
                 height=1000,  # Grafiğin dikey boyutunu artırdım
-                width=1800,
+                width=2200,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
                 legend=dict(orientation="h", yanchor="top", y=1.2, xanchor="center", x=0.5)
