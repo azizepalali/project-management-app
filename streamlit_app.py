@@ -9,12 +9,25 @@ st.set_page_config(layout="wide", page_title="Product Analytics Gantt Chart Crea
 # Başlık
 st.title("Product Analytics Gantt Chart Creator 🚀")
 
-# Kullanıcıdan Excel dosyası yükleme
-uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx", "xls"])
+# Kullanıcıdan veri yükleme (Excel veya kopyala-yapıştır metin)
+option = st.radio("Choose data input method:", ("Upload Excel File", "Paste Data"))
 
-if uploaded_file is not None:
-    df = pd.read_excel(uploaded_file)
-    
+df = None
+
+if option == "Upload Excel File":
+    uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx", "xls"])
+    if uploaded_file is not None:
+        df = pd.read_excel(uploaded_file)
+
+elif option == "Paste Data":
+    pasted_data = st.text_area("Paste your tab-separated data here:")
+    if pasted_data:
+        try:
+            df = pd.read_csv(pd.compat.StringIO(pasted_data), sep="\t")
+        except Exception as e:
+            st.error(f"Error parsing data: {e}")
+
+if df is not None:
     # Verinin uygun formatta olduğundan emin ol
     required_columns = {"Main Domain", "Sub Domain", "Subject Area", "Task", "Start Date", "End Date"}
     if required_columns.issubset(df.columns):
@@ -49,22 +62,22 @@ if uploaded_file is not None:
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            main_domain = st.selectbox("Select Main Domain", ["All"] + sorted(df["Main Domain"].dropna().unique().tolist()))
+            main_domain = st.multiselect("Select Main Domain", sorted(df["Main Domain"].dropna().unique().tolist()), default=[])
         with col2:
-            sub_domain_options = ["All"] + sorted(df[df["Main Domain"] == main_domain]["Sub Domain"].dropna().unique().tolist()) if main_domain != "All" else ["All"] + sorted(df["Sub Domain"].dropna().unique().tolist())
-            sub_domain = st.selectbox("Select Sub Domain", sub_domain_options)
+            sub_domain_options = sorted(df[df["Main Domain"].isin(main_domain)]["Sub Domain"].dropna().unique().tolist()) if main_domain else sorted(df["Sub Domain"].dropna().unique().tolist())
+            sub_domain = st.multiselect("Select Sub Domain", sub_domain_options, default=[])
         with col3:
-            subject_area_options = ["All"] + sorted(df[df["Sub Domain"] == sub_domain]["Subject Area"].dropna().unique().tolist()) if sub_domain != "All" else ["All"] + sorted(df["Subject Area"].dropna().unique().tolist())
-            subject_area = st.selectbox("Select Subject Area", subject_area_options)
+            subject_area_options = sorted(df[df["Sub Domain"].isin(sub_domain)]["Subject Area"].dropna().unique().tolist()) if sub_domain else sorted(df["Subject Area"].dropna().unique().tolist())
+            subject_area = st.multiselect("Select Subject Area", subject_area_options, default=[])
         
         # Filtreleme işlemi
         filtered_df = df.copy()
-        if main_domain != "All":
-            filtered_df = filtered_df[filtered_df["Main Domain"] == main_domain]
-        if sub_domain != "All":
-            filtered_df = filtered_df[filtered_df["Sub Domain"] == sub_domain]
-        if subject_area != "All":
-            filtered_df = filtered_df[filtered_df["Subject Area"] == subject_area]
+        if main_domain:
+            filtered_df = filtered_df[filtered_df["Main Domain"].isin(main_domain)]
+        if sub_domain:
+            filtered_df = filtered_df[filtered_df["Sub Domain"].isin(sub_domain)]
+        if subject_area:
+            filtered_df = filtered_df[filtered_df["Subject Area"].isin(subject_area)]
         
         # Data'yı kopyala yapıştır ile almak için gösterme
         st.subheader("Filtered Data")
