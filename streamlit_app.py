@@ -71,10 +71,10 @@ if uploaded_file is not None:
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
             fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')), textposition='inside')  # Gölge efekti eklendi
             fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=False)
-            fig.update_layout(
+            fig.update_layout(plot_bgcolor='white', paper_bgcolor='white', 
                 autosize=True,
                 height=1000,  # Grafiğin dikey boyutunu artırdım
-                width=1600,
+                width=1800,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
                 legend=dict(orientation="h", yanchor="top", y=1.2, xanchor="center", x=0.5)
