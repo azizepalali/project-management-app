@@ -11,7 +11,7 @@ st.set_page_config(layout="wide", page_title="Product Analytics Gantt Chart Crea
 st.title("Product Analytics Gantt Chart Creator 🚀")
 
 # Kullanıcıdan veri yükleme (Excel veya kopyala-yapıştır metin)
-option = st.radio("Choose data input method:", ("Upload Excel File", "Paste Data"))
+option = st.radio("Choose data input method:", ("Upload Excel File", "Paste Comma-Separated Data"))
 
 df = None
 
@@ -20,13 +20,12 @@ if option == "Upload Excel File":
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
 
-elif option == "Paste Data":
+elif option == "Paste Comma-Separated Data":
     pasted_data = st.text_area("Paste your comma-separated data here:")
     if pasted_data:
         try:
             rows = [line.split(",") for line in pasted_data.strip().split("\n")]
             df = pd.DataFrame(rows[1:], columns=rows[0])
-df = pd.DataFrame(rows[1:], columns=rows[0])
         except Exception as e:
             st.error(f"Error parsing data: {e}")
 
@@ -47,10 +46,9 @@ if df is not None:
         
         col1, col2 = st.columns(2)
         with col1:
-            start_date = st.selectbox("Select Start Date", sorted(df["Start Date"].unique()), index=sorted(df["Start Date"].unique()).index(default_start) if default_start in df["Start Date"].unique() else 0)
+            start_date = st.date_input("Select Start Date", value=default_start, min_value=min_date, max_value=max_date)
         with col2:
-            available_end_dates = sorted(df[df["Start Date"] >= start_date]["End Date"].unique())
-            end_date = st.selectbox("Select End Date", available_end_dates, index=available_end_dates.index(default_end) if default_end in available_end_dates else len(available_end_dates) - 1)
+            end_date = st.date_input("Select End Date", value=default_end, min_value=min_date, max_value=max_date)
         
         # Seçilen tarih aralığında veriyi filtrele
         df = df[(df["Start Date"] >= start_date) & (df["End Date"] <= end_date)]
@@ -65,13 +63,13 @@ if df is not None:
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            main_domain = st.multiselect("Select Main Domain", sorted(df["Main Domain"].dropna().unique().tolist()), default=[])
+            main_domain = st.multiselect("Select Main Domain", sorted(df["Main Domain"].dropna().unique().tolist()))
         with col2:
             sub_domain_options = sorted(df[df["Main Domain"].isin(main_domain)]["Sub Domain"].dropna().unique().tolist()) if main_domain else sorted(df["Sub Domain"].dropna().unique().tolist())
-            sub_domain = st.multiselect("Select Sub Domain", sub_domain_options, default=[])
+            sub_domain = st.multiselect("Select Sub Domain", sub_domain_options)
         with col3:
             subject_area_options = sorted(df[df["Sub Domain"].isin(sub_domain)]["Subject Area"].dropna().unique().tolist()) if sub_domain else sorted(df["Subject Area"].dropna().unique().tolist())
-            subject_area = st.multiselect("Select Subject Area", subject_area_options, default=[])
+            subject_area = st.multiselect("Select Subject Area", subject_area_options)
         
         # Filtreleme işlemi
         filtered_df = df.copy()
@@ -82,7 +80,7 @@ if df is not None:
         if subject_area:
             filtered_df = filtered_df[filtered_df["Subject Area"].isin(subject_area)]
         
-        # Data'yı kopyala yapıştır ile almak için gösterme
+        # Data'yı indirme butonu
         st.subheader("Filtered Data")
         st.dataframe(filtered_df)
         st.download_button(label="Download Filtered Data as CSV", data=filtered_df.to_csv(index=False), file_name="filtered_data.csv", mime="text/csv")
