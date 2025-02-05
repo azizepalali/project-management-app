@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime, timedelta
+from datetime import datetime
 from io import StringIO
 
 # Sayfanın tam genişlikte olması için ayar
@@ -80,20 +80,17 @@ if df is not None:
         if subject_area:
             filtered_df = filtered_df[filtered_df["Subject Area"].isin(subject_area)]
         
-        # Data'yı indirme butonu
-        
-        
-        # Her Main Domain için ayrı Gantt Chart oluşturma
+        # Gantt Chart oluşturma
         for domain in filtered_df["Main Domain"].unique():
             domain_df = filtered_df[filtered_df["Main Domain"] == domain].sort_values(by=["Sub Domain", "Start Date"])
             st.subheader(f"Gantt Chart for {domain}")
             fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Task", color="Sub Domain", 
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
-            fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')), textposition='outside'), textposition='outside')  # Gölge efekti eklendi
+            fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')))
             fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=True)
             fig.update_layout(bargap=0.1, 
                 autosize=True,
-                height=200,  # Grafiğin dikey boyutunu artırdım
+                height=1000,  # Grafik boyutu sabit
                 width=2200,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
