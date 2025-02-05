@@ -24,8 +24,8 @@ elif option == "Paste Data":
     pasted_data = st.text_area("Paste your comma-separated data here:")
     if pasted_data:
         try:
-            rows = [line.split(",") for line in pasted_data.strip().split("
-")]
+            rows = [line.split(",") for line in pasted_data.strip().split("\n")]
+            df = pd.DataFrame(rows[1:], columns=rows[0])
 df = pd.DataFrame(rows[1:], columns=rows[0])
         except Exception as e:
             st.error(f"Error parsing data: {e}")
