@@ -39,7 +39,26 @@ if uploaded_file is not None:
             fig = px.timeline(filtered_df, x_start="Start Date", x_end="End Date", y="Task", color="Subject Area", 
                               title="Filtered Gantt Chart", hover_data=["Main Domain", "Sub Domain", "Subject Area"])
             fig.update_yaxes(categoryorder="total ascending")
-            st.plotly_chart(fig)
+            fig.update_layout(
+                autosize=True,
+                height=600,  # Daha büyük grafik
+                xaxis_title="Timeline",  # X ekseni başlığı
+                xaxis=dict(side="top"),  # Tarihlerin üstte görünmesi
+                shapes=[
+                    dict(
+                        type="rect",
+                        xref="x",
+                        yref="y",
+                        x0=row["Start Date"],
+                        x1=row["End Date"],
+                        y0=row["Task"],
+                        y1=row["Task"],
+                        fillcolor="rgba(0, 0, 255, 0.2)",
+                        line=dict(width=0)
+                    ) for _, row in filtered_df.iterrows()
+                ]
+            )
+            st.plotly_chart(fig, use_container_width=True)
         else:
             st.write("No data available for the selected filters.")
     else:
