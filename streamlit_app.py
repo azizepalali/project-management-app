@@ -77,7 +77,7 @@ if uploaded_file is not None:
                 width=1600,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
-                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
+                legend=dict(orientation="h", yanchor="top", y=1.2, xanchor="center", x=0.5)
             )
             st.plotly_chart(fig, use_container_width=True)
     else:
