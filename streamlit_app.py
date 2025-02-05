@@ -91,9 +91,9 @@ if df is not None:
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
             fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')), textposition='outside')  # Gölge efekti eklendi
             fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=True)
-            fig.update_layout(bargap=0.3, 
+            fig.update_layout(bargap=0.1, 
                 autosize=True,
-                height=min(1000, max(600, len(filtered_df) * 25)),  # Grafiğin dikey boyutunu artırdım
+                height=min(200, max(100, len(filtered_df) * 10)),  # Grafiğin dikey boyutunu artırdım
                 width=2200,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
