@@ -23,7 +23,8 @@ elif option == "Paste Data":
     pasted_data = st.text_area("Paste your tab-separated data here:")
     if pasted_data:
         try:
-            df = pd.read_csv(pd.compat.StringIO(pasted_data), sep="\t")
+            from io import StringIO
+df = pd.read_csv(StringIO(pasted_data), sep="	")
         except Exception as e:
             st.error(f"Error parsing data: {e}")
 
