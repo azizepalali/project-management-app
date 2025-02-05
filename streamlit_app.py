@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Sayfa genişliğini artır
 st.set_page_config(layout="wide")
@@ -21,6 +21,14 @@ if uploaded_file is not None:
         df["Start Date"] = pd.to_datetime(df["Start Date"])
         df["End Date"] = pd.to_datetime(df["End Date"])
         
+        # Zaman aralıklarını 7 günlük bölümler halinde göster
+        start_date = datetime(2025, 1, 1)
+        end_date = df["End Date"].max()
+        date_range = pd.date_range(start=start_date, end=end_date, freq='7D')
+        
+        # Ana Domain gruplarına göre sıralama
+        df = df.sort_values(by=["Main Domain", "Sub Domain", "Start Date"])
+        
         # Filtreleme seçenekleri üstte olacak şekilde düzenlendi
         col1, col2, col3 = st.columns(3)
         
@@ -33,74 +41,42 @@ if uploaded_file is not None:
             subject_area_options = ["All"] + sorted(df[df["Sub Domain"] == sub_domain]["Subject Area"].dropna().unique().tolist()) if sub_domain != "All" else ["All"] + sorted(df["Subject Area"].dropna().unique().tolist())
             subject_area = st.selectbox("Select Subject Area", subject_area_options)
         
-        # Eğer 'All' seçilirse, her domain için ayrı Gantt çiz
-        if main_domain == "All":
-            for domain in df["Main Domain"].unique():
-                st.subheader(f"Gantt Chart for {domain}")
-                domain_df = df[df["Main Domain"] == domain]
-                fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Task", color="Subject Area", 
-                                  title=f"Filtered Gantt Chart - {domain}", hover_data=["Main Domain", "Sub Domain", "Subject Area"])
-                fig.update_yaxes(categoryorder="total ascending", showgrid=True)  # Yatay çizgileri görünür yap
-                fig.update_layout(
-                    autosize=True,
-                    height=800,
-                    width=1600,
-                    xaxis_title="Timeline",
-                    xaxis=dict(side="top", showgrid=True, tickmode='linear'),
-                    legend=dict(orientation="h", yanchor="top", y=1.2, xanchor="center", x=0.5),
-                    shapes=[
-                        dict(
-                            type="line",
-                            xref="x",
-                            yref="y",
-                            x0=row["Start Date"],
-                            x1=row["End Date"],
-                            y0=row["Task"],
-                            y1=row["Task"],
-                            line=dict(width=1, color="black")
-                        ) for _, row in domain_df.iterrows()
-                    ]
-                )
-                st.plotly_chart(fig, use_container_width=True)
+        # Filtreleme işlemi
+        filtered_df = df.copy()
+        if main_domain != "All":
+            filtered_df = filtered_df[filtered_df["Main Domain"] == main_domain]
+        if sub_domain != "All":
+            filtered_df = filtered_df[filtered_df["Sub Domain"] == sub_domain]
+        if subject_area != "All":
+            filtered_df = filtered_df[filtered_df["Subject Area"] == subject_area]
+        
+        # Gantt şeması oluşturma
+        if not filtered_df.empty:
+            fig = px.timeline(filtered_df, x_start="Start Date", x_end="End Date", y="Task", color="Main Domain", 
+                              title="Gantt Chart", hover_data=["Main Domain", "Sub Domain", "Subject Area"])
+            fig.update_yaxes(categoryorder="total ascending", showgrid=True)
+            fig.update_layout(
+                autosize=True,
+                height=900,
+                width=1600,
+                xaxis_title="Timeline",
+                xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
+                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+                shapes=[
+                    dict(
+                        type="line",
+                        xref="x",
+                        yref="y",
+                        x0=row["Start Date"],
+                        x1=row["End Date"],
+                        y0=row["Task"],
+                        y1=row["Task"],
+                        line=dict(width=2, color="black"),
+                    ) for _, row in filtered_df.iterrows()
+                ]
+            )
+            st.plotly_chart(fig, use_container_width=True)
         else:
-            # Filtreleme işlemi
-            filtered_df = df.copy()
-            if main_domain != "All":
-                filtered_df = filtered_df[filtered_df["Main Domain"] == main_domain]
-            if sub_domain != "All":
-                filtered_df = filtered_df[filtered_df["Sub Domain"] == sub_domain]
-            if subject_area != "All":
-                filtered_df = filtered_df[filtered_df["Subject Area"] == subject_area]
-            
-            # Gantt şeması oluşturma
-            if not filtered_df.empty:
-                fig = px.timeline(filtered_df, x_start="Start Date", x_end="End Date", y="Task", color="Subject Area", 
-                                  title="Filtered Gantt Chart", hover_data=["Main Domain", "Sub Domain", "Subject Area"])
-                fig.update_yaxes(categoryorder="total ascending", showgrid=True)  # Yatay çizgileri görünür yap
-                fig.update_layout(
-                    autosize=True,
-                    height=1000,
-                    width=1600,
-                    xaxis_title="Timeline",
-                    xaxis=dict(side="top", showgrid=True, tickmode='linear'),
-                    legend=dict(orientation="h", yanchor="top", y=1.2, xanchor="center", x=0.5),
-                    shapes=[
-                        dict(
-                            type="line",
-                            xref="x",
-                            yref="y",
-                            x0=row["Start Date"],
-                            x1=row["End Date"],
-                            y0=row["Task"],
-                            y1=row["Task"],
-                            line=dict(width=1, color="black")
-                        ) for _, row in filtered_df.iterrows()
-                    ]
-                )
-                st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.write("No data available for the selected filters.")
+            st.write("No data available for the selected filters.")
     else:
         st.error("Excel dosyanızda 'Main Domain', 'Sub Domain', 'Subject Area', 'Task', 'Start Date' ve 'End Date' sütunları bulunmalıdır.")
-else:
-    st.write("Please upload an Excel file to generate the Gantt chart.")
