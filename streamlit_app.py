@@ -93,7 +93,7 @@ if df is not None:
             fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=True)
             fig.update_layout(bargap=0.1, 
                 autosize=True,
-                height=min(200, max(100, len(filtered_df) * 10)),  # Grafiğin dikey boyutunu artırdım
+                height=200,  # Grafiğin dikey boyutunu artırdım
                 width=2200,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
