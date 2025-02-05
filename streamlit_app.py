@@ -89,7 +89,7 @@ if df is not None:
             st.subheader(f"Gantt Chart for {domain}")
             fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Task", color="Sub Domain", 
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
-            fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')), textposition='outside')  # Gölge efekti eklendi
+            fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')), textposition='outside'), textposition='outside')  # Gölge efekti eklendi
             fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=True)
             fig.update_layout(bargap=0.1, 
                 autosize=True,
