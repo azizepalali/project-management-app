@@ -81,9 +81,7 @@ if df is not None:
             filtered_df = filtered_df[filtered_df["Subject Area"].isin(subject_area)]
         
         # Data'yı indirme butonu
-        st.subheader("Filtered Data")
-        st.dataframe(filtered_df)
-        st.download_button(label="Download Filtered Data as CSV", data=filtered_df.to_csv(index=False), file_name="filtered_data.csv", mime="text/csv")
+        
         
         # Her Main Domain için ayrı Gantt Chart oluşturma
         for domain in filtered_df["Main Domain"].unique():
@@ -93,14 +91,19 @@ if df is not None:
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
             fig.update_traces(marker=dict(line=dict(width=2, color='rgba(0,0,0,0.3)')), textposition='outside')  # Gölge efekti eklendi
             fig.update_yaxes(categoryorder="total ascending", showgrid=True, visible=True)
-            fig.update_layout(bargap=0.1, 
+            fig.update_layout(bargap=0.3, 
                 autosize=True,
-                height=min(1000, max(400, len(filtered_df) * 20)),  # Grafiğin dikey boyutunu artırdım
+                height=min(1000, max(600, len(filtered_df) * 25)),  # Grafiğin dikey boyutunu artırdım
                 width=2200,
                 xaxis_title="Timeline",
                 xaxis=dict(side="top", showgrid=True, tickmode='array', tickvals=date_range, ticktext=[d.strftime('%d %b %Y') for d in date_range]),
-                legend=dict(orientation="h", yanchor="top", y=1.2, xanchor="center", x=0.5)
+                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
             )
             st.plotly_chart(fig, use_container_width=True)
+
+        # Data'yı en sonda gösterme
+        st.subheader("Filtered Data")
+        st.dataframe(filtered_df)
+        st.download_button(label="Download Filtered Data as CSV", data=filtered_df.to_csv(index=False), file_name="filtered_data.csv", mime="text/csv")
     else:
         st.error("Excel dosyanızda 'Main Domain', 'Sub Domain', 'Subject Area', 'Task', 'Start Date' ve 'End Date' sütunları bulunmalıdır.")
