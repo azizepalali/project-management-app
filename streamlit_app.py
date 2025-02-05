@@ -4,10 +4,19 @@ import plotly.express as px
 from datetime import datetime, timedelta
 
 # Sayfa genişliğini artır
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Product Analytics Gantt Chart Creator 🚀", page_icon="🚀", initial_sidebar_state="collapsed")
+
+# Arka plan rengini beyaz yap
+st.markdown("""
+    <style>
+        .main {
+            background-color: white !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Başlık
-st.title("Interactive Gantt Chart Creator")
+st.title("Product Analytics Gantt Chart Creator 🚀")
 
 # Kullanıcıdan Excel dosyası yükleme
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx", "xls"])
@@ -21,9 +30,20 @@ if uploaded_file is not None:
         df["Start Date"] = pd.to_datetime(df["Start Date"])
         df["End Date"] = pd.to_datetime(df["End Date"])
         
+        # Kullanıcının tarih aralığını seçmesini sağla
+        min_date = df["Start Date"].min()
+        max_date = df["End Date"].max()
+        start_date, end_date = st.sidebar.date_input(
+            "Select Date Range:",
+            [min_date, max_date],
+            min_value=min_date,
+            max_value=max_date
+        )
+        
+        # Seçilen tarih aralığında veriyi filtrele
+        df = df[(df["Start Date"] >= pd.to_datetime(start_date)) & (df["End Date"] <= pd.to_datetime(end_date))]
+        
         # Zaman aralıklarını 7 günlük bölümler halinde göster
-        start_date = datetime(2025, 1, 1)
-        end_date = df["End Date"].max()
         date_range = pd.date_range(start=start_date, end=end_date, freq='7D')
         
         # Ana Domain gruplarına göre sıralama, Task'ları Sub Domain bazında sıralama
