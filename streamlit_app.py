@@ -26,7 +26,7 @@ if uploaded_file is not None:
         end_date = df["End Date"].max()
         date_range = pd.date_range(start=start_date, end=end_date, freq='7D')
         
-        # Ana Domain gruplarına göre sıralama
+        # Ana Domain gruplarına göre sıralama, Task'ları Sub Domain bazında sıralama
         df = df.sort_values(by=["Main Domain", "Sub Domain", "Start Date"])
         
         # Filtreleme seçenekleri üstte olacak şekilde düzenlendi
@@ -52,7 +52,7 @@ if uploaded_file is not None:
         
         # Her Main Domain için ayrı Gantt Chart oluşturma
         for domain in filtered_df["Main Domain"].unique():
-            domain_df = filtered_df[filtered_df["Main Domain"] == domain]
+            domain_df = filtered_df[filtered_df["Main Domain"] == domain].sort_values(by=["Sub Domain", "Start Date"])
             st.subheader(f"Gantt Chart for {domain}")
             fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Task", color="Sub Domain", 
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
