@@ -54,7 +54,7 @@ if uploaded_file is not None:
         for domain in filtered_df["Main Domain"].unique():
             domain_df = filtered_df[filtered_df["Main Domain"] == domain].sort_values(by=["Sub Domain", "Start Date"])
             st.subheader(f"Gantt Chart for {domain}")
-            fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Task", color="Sub Domain", 
+            fig = px.timeline(domain_df, x_start="Start Date", x_end="End Date", y="Sub Domain", color="Sub Domain", 
                               title=f"Gantt Chart - {domain}", text="Task", hover_data=["Sub Domain", "Subject Area", "Task"])
             fig.update_traces(marker=dict(line=dict(width=0)), textposition='inside')
             fig.update_yaxes(categoryorder="total ascending", showgrid=True)
