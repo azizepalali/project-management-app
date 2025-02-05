@@ -29,9 +29,9 @@ if uploaded_file is not None:
         # Ana Domain gruplarına göre sıralama
         df = df.sort_values(by=["Main Domain", "Sub Domain", "Start Date"])
         
-        # Görevleri Main Domain'e göre gruplayarak benzersiz pozisyonlar belirleme
-        df["Task Position"] = df.groupby(["Main Domain", "Task"]).cumcount()
-        df["Display Position"] = df["Main Domain"] + " - " + df["Task Position"].astype(str)
+        # Unique ID oluşturma ve sol tarafta bu ID'yi kullanma
+        df["Unique ID"] = df["Main Domain"] + " - " + df["Task"]
+        df["Display Main Domain"] = df["Main Domain"]
         
         # Filtreleme seçenekleri üstte olacak şekilde düzenlendi
         col1, col2, col3 = st.columns(3)
@@ -56,10 +56,10 @@ if uploaded_file is not None:
         
         # Gantt şeması oluşturma
         if not filtered_df.empty:
-            fig = px.timeline(filtered_df, x_start="Start Date", x_end="End Date", y="Main Domain", color="Main Domain", 
+            fig = px.timeline(filtered_df, x_start="Start Date", x_end="End Date", y="Unique ID", color="Main Domain", 
                               title="Gantt Chart", text="Task", hover_data=["Main Domain", "Sub Domain", "Subject Area", "Task"])
             fig.update_traces(marker=dict(line=dict(width=0)), textposition='inside')
-            fig.update_yaxes(categoryorder="total ascending", showgrid=True)
+            fig.update_yaxes(categoryorder="total ascending", ticktext=filtered_df["Display Main Domain"].unique(), tickvals=filtered_df["Unique ID"].unique(), showgrid=True)
             fig.update_layout(
                 autosize=True,
                 height=900,
