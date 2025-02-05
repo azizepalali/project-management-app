@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 st.set_page_config(layout="wide")
 
 # Başlık
-st.title("Interactive Gantt Chart Creator")
+st.title("Data Product Analytics Gantt Chart Creator 🚀")
 
 # Kullanıcıdan Excel dosyası yükleme
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx", "xls"])
